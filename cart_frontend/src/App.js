@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import NavBar from './components/NavBar';
 import Product from './components/Product';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
 import Cart from './components/Cart';
+import './App.css';
 
 function App() {
 
@@ -15,6 +15,8 @@ function App() {
 
   //endPoints
   const apiEndPoints = 'http://localhost:8000/products';
+
+  const notifyError = () => toast.error('Something went Wrong');
 
   useEffect(() => {
     // no such functionality to store loggedIn User ie always undefined
@@ -34,7 +36,7 @@ function App() {
         const { data } = await axios.get(`${apiEndPoints}/`);
         setProducts(data)
       } catch (e) {
-        // handle Error
+        notifyError()
       }
     }
     getProducts();
@@ -52,9 +54,7 @@ function App() {
       await axios.patch(`${apiEndPoints}/${product.id}/`, { quantity: quantity + 1 })
       setProducts(updatedProducts);
     } catch (e) {
-      // handle error 
-      alert('something went wrong');
-      setProducts(products);
+      notifyError()
     }
   }
 
@@ -70,8 +70,7 @@ function App() {
       await axios.patch(`${apiEndPoints}/${product.id}/`, { quantity: quantity - 1 })
       setProducts(updatedProducts)
     } catch (e) {
-      alert('something went wrong');
-      setProducts(products);
+      notifyError()
     }
   }
 
@@ -86,8 +85,7 @@ function App() {
       setProducts(updatedProducts);
       await axios.patch(`${apiEndPoints}/${product.id}/`, { quantity: 0 })
     } catch (e) {
-      alert('Failed to remove from cart');
-      setProducts(products)
+      notifyError()
     }
   }
 
@@ -98,6 +96,7 @@ function App() {
   return (
     <React.Fragment>
       <NavBar user={user} count={selectedProduct()} />
+      <Toaster position="top-right" />
       <Routes>
         <Route
           path='/products'
